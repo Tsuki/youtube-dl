@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"errors"
-	"net/url"
-	"net/http"
+	"fmt"
 	"io/ioutil"
+	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -72,9 +72,9 @@ func decodeVideoInfo(response string) (streams streamList, err error) {
 	log("Server answered with a success code")
 
 	/*
-	for k, v := range answer {
-		log("%s: %#v", k, v)
-	}
+	   for k, v := range answer {
+	     log("%s: %#v", k, v)
+	   }
 	*/
 
 	// read the streams map
@@ -99,25 +99,25 @@ func decodeVideoInfo(response string) (streams streamList, err error) {
 			continue
 		}
 		/* dumps the raw streams
-		log(fmt.Sprintf("%v\n", stream_qry))
+		   log(fmt.Sprintf("%v\n", stream_qry))
 		*/
 		stream := stream{
 			"quality": stream_qry["quality"][0],
-			"type": stream_qry["type"][0],
-			"url": stream_qry["url"][0],
-			"sig": "",
-			"title": answer["title"][0],
-			"author": answer["author"][0],
+			"type":    stream_qry["type"][0],
+			"url":     stream_qry["url"][0],
+			"sig":     "",
+			"title":   answer["title"][0],
+			"author":  answer["author"][0],
 		}
-		
+
 		if sig, exists := stream_qry["sig"]; exists { // old one
 			stream["sig"] = sig[0]
 		}
-		
+
 		if sig, exists := stream_qry["s"]; exists { // now they use this
 			stream["sig"] = sig[0]
 		}
-		
+
 		streams = append(streams, stream)
 
 		quality := stream.Quality()
