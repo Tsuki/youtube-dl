@@ -51,10 +51,10 @@ func getWriter(cfg *Config, stream stream) (out io.WriteCloser, err error) {
 	}
 
 	if cfg.isMp3() {
-		fmt.Printf("Converting video to mp3 file at '%s' ...\n", path)
+		log.Infof("Converting video to mp3 file at '%s' ...\n", path)
 		out, err = getFFmpegWriter(path, cfg.AudioBitrate(stream))
 	} else {
-		fmt.Printf("Downloading video to disk at '%s' ...\n", path)
+		log.Infof("Downloading video to disk at '%s' ...\n", path)
 		out, err = os.Create(path)
 	}
 
