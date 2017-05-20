@@ -5,7 +5,6 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 // custom io.WriteCloser to handle on the fly mp3 convertion
@@ -55,7 +54,6 @@ func getWriter(cfg *Config, stream stream) (out io.WriteCloser, err error) {
 		fmt.Printf("Converting video to mp3 file at '%s' ...\n", path)
 		out, err = getFFmpegWriter(path, cfg.AudioBitrate(stream))
 	} else {
-		path = strings.Replace(path, "/", "_", -1)
 		fmt.Printf("Downloading video to disk at '%s' ...\n", path)
 		out, err = os.Create(path)
 	}
@@ -64,7 +62,7 @@ func getWriter(cfg *Config, stream stream) (out io.WriteCloser, err error) {
 		return nil, fmt.Errorf("opening destination file: %s", err)
 	}
 
-	log("Destination opened at '%s'", path)
+	log.Debugf("Destination opened at '%s'", path)
 
 	return out, nil
 }

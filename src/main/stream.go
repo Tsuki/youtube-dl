@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"strings"
-	"net/http"
 	"io"
+	"net/http"
+	"strings"
 )
 
 type stream map[string]string
@@ -25,7 +25,7 @@ func (s stream) Format() string {
 
 func (s stream) Quality() string {
 	for _, quality := range sortedQualities {
-		if (quality == s["quality"]) {
+		if quality == s["quality"] {
 			return quality
 		}
 	}
@@ -35,7 +35,7 @@ func (s stream) Quality() string {
 func (stream stream) download(out io.Writer) error {
 	url := stream.Url()
 
-	log("Downloading stream from '%s'", url)
+	log.Debugf("Downloading stream from '%s'", url)
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -50,7 +50,7 @@ func (stream stream) download(out io.Writer) error {
 		return fmt.Errorf("saving file: %s (%d bytes copied)", err, length)
 	}
 
-	log("Downloaded %d bytes", length)
+	log.Debugf("Downloaded %d bytes", length)
 
 	return nil
 }

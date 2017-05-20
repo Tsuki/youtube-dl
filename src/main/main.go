@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"runtime"
+	"github.com/op/go-logging"
 )
 
 const (
@@ -30,13 +30,10 @@ const (
 	DEFAULT_DESTINATION     = "./%title%.%format%"
 	DEFAULT_DESTINATION_MP3 = "./%title%.mp3"
 )
-
-func log(format string, params ...interface{}) {
-	if cfg.verbose {
-		fmt.Printf(format+"\n", params...)
-	}
-}
-
+var log = logging.MustGetLogger("youtube")
+var format = logging.MustStringFormatter(
+	`%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}`,
+)
 func main() {
 	videoId, err := cfg.findVideoId()
 	if err != nil {
@@ -45,21 +42,18 @@ func main() {
 	}
 
 	response, err := getVideoInfo(videoId)
-	runtime.Breakpoint()
 	if err != nil {
 		fmt.Printf("ERROR: unable to request the video information: %s\n", err)
 		return
 	}
 
 	streams, err := decodeVideoInfo(response)
-	runtime.Breakpoint()
 	if err != nil {
 		fmt.Printf("ERROR: unable to decode the server's answer: %s\n", err)
 		return
 	}
 
 	stream, err := cfg.selectStream(streams)
-	runtime.Breakpoint()
 	if err != nil {
 		fmt.Printf("ERROR: unable to select a stream: %s\n", err)
 		return

@@ -10,9 +10,9 @@ import (
 )
 
 func getVideoInfo(videoId string) (string, error) {
-	url := "http://youtube.com/get_video_info?video_id=" + videoId
-	log("Requesting url: %s", url)
-	resp, err := http.Get(url)
+	video_url := "http://youtube.com/get_video_info?video_id=" + videoId
+	log.Debugf("Requesting video_url: %s", video_url)
+	resp, err := http.Get(video_url)
 	if err != nil {
 		return "", fmt.Errorf("An error occured while requesting the video information: '%s'", err)
 	}
@@ -24,7 +24,7 @@ func getVideoInfo(videoId string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("An error occured while reading the video information: '%s'", err)
 	}
-	log("Got %d bytes answer", len(body))
+	log.Debugf("Got %d bytes answer", len(body))
 	return string(body), nil
 }
 
@@ -69,7 +69,7 @@ func decodeVideoInfo(response string) (streams streamList, err error) {
 		return
 	}
 
-	log("Server answered with a success code")
+	log.Debugf("Server answered with a success code")
 
 	/*
 	   for k, v := range answer {
@@ -85,17 +85,17 @@ func decodeVideoInfo(response string) (streams streamList, err error) {
 
 	streams_list := strings.Split(stream_map[0], ",")
 
-	log("Found %d streams in answer", len(streams_list))
+	log.Debugf("Found %d streams in answer", len(streams_list))
 
 	for stream_pos, stream_raw := range streams_list {
 		stream_qry, err := url.ParseQuery(stream_raw)
 		if err != nil {
-			log(fmt.Sprintf("An error occured while decoding one of the video's stream's information: stream %d: %s\n", stream_pos, err))
+			log.Debugf(fmt.Sprintf("An error occured while decoding one of the video's stream's information: stream %d: %s\n", stream_pos, err))
 			continue
 		}
 		err = ensureFields(stream_qry, []string{"quality", "type", "url"})
 		if err != nil {
-			log(fmt.Sprintf("Missing fields in one of the video's stream's information: stream %d: %s\n", stream_pos, err))
+			log.Debugf(fmt.Sprintf("Missing fields in one of the video's stream's information: stream %d: %s\n", stream_pos, err))
 			continue
 		}
 		/* dumps the raw streams
@@ -106,15 +106,15 @@ func decodeVideoInfo(response string) (streams streamList, err error) {
 			"type":    stream_qry["type"][0],
 			"url":     stream_qry["url"][0],
 			"sig":     "",
-			"title":   answer["title"][0],
-			"author":  answer["author"][0],
+			"title":   strings.Replace(answer["title"][0], "/", "_", -1),
+			"author":  strings.Replace(answer["author"][0], "/", "_", -1),
 		}
 
 		if sig, exists := stream_qry["sig"]; exists { // old one
 			stream["sig"] = sig[0]
 		}
 
-		if sig, exists := stream_qry["s"]; exists { // now they use this
+		if sig, exists := stream_qry["signature"]; exists { // now they use this
 			stream["sig"] = sig[0]
 		}
 
@@ -122,18 +122,18 @@ func decodeVideoInfo(response string) (streams streamList, err error) {
 
 		quality := stream.Quality()
 		if quality == QUALITY_UNKNOWN {
-			log("Found unknown quality '%s'", stream["quality"])
+			log.Debugf("Found unknown quality '%s'", stream["quality"])
 		}
 
 		format := stream.Format()
 		if format == FORMAT_UNKNOWN {
-			log("Found unknown format '%s'", stream["type"])
+			log.Debugf("Found unknown format '%s'", stream["type"])
 		}
 
-		log("Stream found: quality '%s', format '%s'", quality, format)
+		log.Debugf("Stream found: quality '%s', format '%s'", quality, format)
 	}
 
-	log("Successfully decoded %d streams", len(streams))
+	log.Debugf("Successfully decoded %d streams", len(streams))
 
 	return
 }
