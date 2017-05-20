@@ -87,6 +87,7 @@ type Config struct {
 	format       *commaStringList
 	videoId      string
 	toMp3        bool
+	audio        bool
 	audioBitrate uint
 }
 
@@ -103,6 +104,7 @@ var cfg *Config = &Config{
 		sortedFormats,
 	),
 	"",
+	false,
 	false,
 	AUDIO_BITRATE_AUTO,
 }
@@ -136,6 +138,9 @@ func (cfg *Config) findVideoId() (videoId string, err error) {
 
 func (cfg *Config) isMp3() bool {
 	return cfg.toMp3
+}
+func (cfg *Config) isAudio() bool {
+	return cfg.audio
 }
 
 func (cfg *Config) isVerbose() bool {

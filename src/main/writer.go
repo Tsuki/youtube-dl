@@ -50,10 +50,13 @@ func getWriter(cfg *Config, stream stream) (out io.WriteCloser, err error) {
 		return nil, fmt.Errorf("the destination file '%s' already exists and overwrite set to false", path)
 	}
 
-	if cfg.isMp3() {
+	switch {
+	case cfg.isMp3():
 		log.Infof("Converting video to mp3 file at '%s' ...\n", path)
 		out, err = getFFmpegWriter(path, cfg.AudioBitrate(stream))
-	} else {
+	case cfg.isAudio():
+
+	default:
 		log.Infof("Downloading video to disk at '%s' ...\n", path)
 		out, err = os.Create(path)
 	}
